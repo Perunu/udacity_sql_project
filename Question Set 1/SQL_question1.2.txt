@@ -1,0 +1,12 @@
+WITH duration AS (
+SELECT f.title AS film_title, c.name AS category_name, f.rental_duration
+FROM film f
+JOIN  film_category fcat
+ON f.film_id = fcat.film_id
+JOIN category c
+ON fcat.category_id = c.category_id
+WHERE c.name = 'Animation' OR c.name = 'Children' OR c.name = 'Clasics' OR c.name = 'Comedy' OR c.name = 'Family' OR c.name ='Music'
+)
+SELECT film_title, category_name, rental_duration,
+NTILE(4) OVER (ORDER BY rental_duration) AS standard_quartile
+FROM duration;

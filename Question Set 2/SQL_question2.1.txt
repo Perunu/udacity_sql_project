@@ -1,0 +1,9 @@
+SELECT DATE_PART('year', r.rental_date) AS rent_year, DATE_PART('month', r.rental_date) AS rent_month, s.store_id,
+	COUNT(r.rental_id) AS rentals
+FROM store s
+JOIN staff
+ON s.store_id = staff.store_id
+JOIN rental r
+ON staff.staff_id = r.staff_id
+GROUP BY 2, 1, 3
+ORDER BY rentals DESC

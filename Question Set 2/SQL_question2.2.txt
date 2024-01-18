@@ -1,0 +1,20 @@
+WITH pay AS (
+	SELECT c.customer_id, DATE_TRUNC('month', p.payment_date) AS pay_mon, CONCAT(c.first_name, ' ', c.last_name) AS fullname, 
+	p.amount AS pay_amount
+	FROM payment p
+	JOIN customer c
+	ON p.customer_id = c.customer_id
+),
+top_rent AS (
+	SELECT pay.customer_id, SUM(pay.pay_amount) AS pay_amount
+	FROM pay
+	GROUP BY 1
+	ORDER BY pay_amount DESC
+	LIMIT 10
+)
+SELECT pay.pay_mon, pay.fullname, COUNT(pay.fullname) AS pay_countpermon, SUM(pay.pay_amount) AS pay_amount
+FROM pay
+JOIN top_rent
+ON pay.customer_id = top_rent.customer_id
+WHERE pay.pay_mon BETWEEN '01-01-2007' AND '01-01-2008'
+GROUP BY 2, 1

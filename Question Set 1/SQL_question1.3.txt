@@ -1,0 +1,26 @@
+WITH dur AS (
+SELECT f.title AS film_title, c.name AS category_name, f.rental_duration
+FROM film f
+JOIN  film_category fcat
+ON f.film_id = fcat.film_id
+JOIN category c
+ON fcat.category_id = c.category_id
+WHERE c.name = 'Animation' OR c.name = 'Children' OR c.name = 'Classics' OR c.name = 'Comedy' OR c.name = 'Family' OR c.name ='Music'
+),
+qtile AS (
+SELECT category_name,
+	NTILE(4) OVER (ORDER BY rental_duration) AS standard_quartile
+FROM dur
+)
+SELECT category_name, standard_quartile,
+	CASE 
+		WHEN category_name = 'Animation' THEN COUNT(standard_quartile)
+		WHEN category_name = 'Children' THEN COUNT(standard_quartile)
+		WHEN category_name = 'Classics' THEN COUNT(standard_quartile)
+		WHEN category_name = 'Comedy' THEN COUNT(standard_quartile)
+		WHEN category_name = 'Family' THEN COUNT(standard_quartile)
+		WHEN category_name = 'Music' THEN COUNT(standard_quartile)
+	END AS count
+FROM qtile
+GROUP BY 1, 2
+ORDER BY category_name, standard_quartile;
